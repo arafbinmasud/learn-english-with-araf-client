@@ -137,7 +137,7 @@ const Home = () => {
         <div className="text-teal-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
           <Sparkles size={13} /> Common Mistakes and Correction:
         </div>
-        <div className="space-y-1.5 font-mono text-xs sm:text-sm">
+        <div className="space-y-1.5 font-mono">
           <div className="flex items-center gap-2">
             <XCircle size={15} className="text-rose-500 shrink-0" />
             <span>
@@ -162,7 +162,7 @@ const Home = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
             তোমার Class বেছে নাও
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-slate-500">
             প্রতিটি লেসন ধাপে ধাপে শেখো এবং নিজের প্রস্তুতিকে আরও শক্ত করো।
           </p>
         </div>
@@ -183,7 +183,7 @@ const Home = () => {
                 <h3 className="text-xl font-bold text-slate-800 group-hover:text-teal-600 transition-colors">
                   {cls.title}
                 </h3>
-                <p className="text-sm text-slate-500 leading-relaxed">
+                <p className=" text-slate-500 leading-relaxed">
                   {cls.desc}
                 </p>
               </div>
@@ -241,7 +241,7 @@ const Home = () => {
                   <h3 className="text-base font-bold text-slate-800 group-hover:text-teal-600 transition-colors leading-snug">
                     {lesson.title}
                   </h3>
-                  <p className="text-slate-500 text-sm line-clamp-2">
+                  <p className="text-slate-500 line-clamp-2">
                     {lesson.shortDescription}
                   </p>
                 </div>
