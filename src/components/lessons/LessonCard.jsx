@@ -1,5 +1,6 @@
 import { BookOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const LessonCard = ({ lesson }) => {
   if (!lesson) return null;
@@ -16,9 +17,23 @@ const LessonCard = ({ lesson }) => {
         </p>
       </div>
 
-      {/* মূল কন্টেন্ট (ReactMarkdown ব্যবহার করে) */}
+      {/* learning objectives  */}
+      <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+          এই লেসন শেষে যা যা শিখবেঃ-
+        </h1>
       <div className="text-slate-700 text-base sm:text-lg space-y-4 leading-relaxed">
-        <ReactMarkdown>{lesson.content}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {lesson.learningObjectives}
+        </ReactMarkdown>
+      </div>
+      {/* মূল কন্টেন্ট (ReactMarkdown ব্যবহার করে) */}
+       <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+         Let's Start:-
+        </h1>
+      <div className="text-slate-700 text-base sm:text-lg space-y-4 leading-relaxed">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {lesson.content}
+        </ReactMarkdown>
       </div>
 
       {/* অনুশীলন বা এক্সারসাইজ সেকশন */}
@@ -28,7 +43,9 @@ const LessonCard = ({ lesson }) => {
             📝 অনুশীলন:
           </h3>
           <div className="text-base text-slate-700 font-medium">
-            <ReactMarkdown>{lesson.exercise}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {lesson.exercise}
+            </ReactMarkdown>
           </div>
         </div>
       )}

@@ -226,14 +226,15 @@ const AddLesson = () => {
         </div>
 
         {/* Popular Lesson Checkbox */}
-        <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl">
+        {/* Popular Lesson Checkbox */}
+        <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl cursor-pointer select-none">
           <input
             type="checkbox"
             name="isPopular"
             id="isPopular"
             checked={formData.isPopular}
             onChange={handleInputChange}
-            className="checkbox checkbox-teal w-5 h-5"
+            className="w-5 h-5 accent-teal-600 rounded cursor-pointer"
           />
           <label
             htmlFor="isPopular"
