@@ -329,7 +329,7 @@ const Dashboard = () => {
                       to={`/lesson/${lesson._id}`}
                       className="text-xs font-bold text-emerald-700 hover:underline flex items-center gap-1"
                     >
-                      পুনরায় পড়ো <ArrowRight size={14} />
+                      পুনরায় পড়ো <ArrowRight size={14} />
                     </Link>
                   </div>
                 </div>
@@ -341,7 +341,7 @@ const Dashboard = () => {
                 No completed lessons yet!
               </p>
               <p className="text-slate-500 text-sm">
-                তুমি এখনো কোনো লেসন সম্পন্ন করোনি। ক্লাস থেকে পড়া শুরু করো এবং
+                তুমি এখনো কোনো লেসন সম্পন্ন করোনি। ক্লাস থেকে পড়া শুরু করো এবং
                 লেসন কমপ্লিট করো।
               </p>
             </div>
@@ -519,8 +519,8 @@ const Dashboard = () => {
                 ></textarea>
               </div>
 
-              {/* Popular Checkbox */}
-              <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl">
+              {/* Popular Checkbox (Fixed styling) */}
+              <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl cursor-pointer select-none">
                 <input
                   type="checkbox"
                   id="editPopular"
@@ -531,7 +531,7 @@ const Dashboard = () => {
                       isPopular: e.target.checked,
                     })
                   }
-                  className="checkbox checkbox-teal w-5 h-5"
+                  className="w-5 h-5 accent-teal-600 rounded cursor-pointer"
                 />
                 <label
                   htmlFor="editPopular"

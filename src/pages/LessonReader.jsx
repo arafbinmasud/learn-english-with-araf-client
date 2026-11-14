@@ -137,6 +137,7 @@ const LessonReader = () => {
               lessons={allLessons}
               currentLessonId={lessonId}
               completedLessons={userData?.completedLessons || []}
+              classLevel={lesson?.classLevel}
             />
           </div>
         </div>

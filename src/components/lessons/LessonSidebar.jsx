@@ -1,12 +1,37 @@
 import { Link } from "react-router";
 import { CheckCircle2, BookOpen } from "lucide-react";
 
-const LessonSidebar = ({ lessons, currentLessonId, completedLessons = [] }) => {
+const LessonSidebar = ({
+  lessons,
+  currentLessonId,
+  completedLessons = [],
+  classLevel,
+}) => {
+  // ক্লাস লেভেলকে সুন্দর নামে রূপান্তর করার ফাংশন
+  const formatClassName = (level) => {
+    switch (level) {
+      case "class-6":
+        return "Class VI";
+      case "class-7":
+        return "Class VII";
+      case "class-8":
+        return "Class VIII";
+      case "ssc":
+        return "SSC English";
+      case "hsc":
+        return "HSC English";
+      default:
+        return "this class";
+    }
+  };
+
   return (
     <div className="bg-white rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-sm">
       <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
         <BookOpen size={20} className="text-teal-600" />
-        <h3 className="font-extrabold text-slate-800 text-base">এই ক্লাসের সব লেসন</h3>
+        <h3 className="font-extrabold text-slate-800 text-base">
+          All Lessons for {formatClassName(classLevel)}
+        </h3>
       </div>
 
       <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
@@ -25,14 +50,19 @@ const LessonSidebar = ({ lessons, currentLessonId, completedLessons = [] }) => {
               }`}
             >
               <div className="flex items-center gap-3 truncate">
-                <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold ${isCurrent ? "bg-white/20 text-white" : "bg-teal-50 text-teal-600"}`}>
+                <span
+                  className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold ${isCurrent ? "bg-white/20 text-white" : "bg-teal-50 text-teal-600"}`}
+                >
                   {idx + 1}
                 </span>
                 <span className="truncate">{lesson.title}</span>
               </div>
 
               {isDone && (
-                <CheckCircle2 size={18} className={isCurrent ? "text-white" : "text-emerald-600"} />
+                <CheckCircle2
+                  size={18}
+                  className={isCurrent ? "text-white" : "text-emerald-600"}
+                />
               )}
             </Link>
           );

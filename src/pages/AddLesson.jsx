@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router"; // ১. useNavigate ইম্পোর্ট করা হলো
 import { AuthContext } from "../context/AuthContext";
 import { axiosSecure } from "../api/axiosInstance";
 import { BookPlus, PlusCircle, Loader2, Sparkles } from "lucide-react";
@@ -6,6 +7,7 @@ import Swal from "sweetalert2";
 
 const AddLesson = () => {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate(); // ২. useNavigate হুক ইনিশিয়ালাইজ করা হলো
   const [loading, setLoading] = useState(false);
 
   // ডিফল্ট বা ডেমো হিসেবে তোমার দেওয়া "Parts of Speech" ডেটা দিয়ে ফর্ম প্রি-ফিল করা
@@ -23,7 +25,7 @@ const AddLesson = () => {
 ইংরেজি শেখার শুরুতেই তোমাকে একটি গুরুত্বপূর্ণ বিষয় জানতে হবে। সেটি হলো Parts of Speech।
 আমরা যখন কোনো বাক্য তৈরি করি, তখন সেখানে বিভিন্ন ধরনের শব্দ ব্যবহার করি। প্রতিটি শব্দের বাক্যের মধ্যে আলাদা আলাদা কাজ থাকে...`,
     exercise:
-      "নিচের বাক্যগুলোতে Bold করা শব্দগুলোর Parts of Speech শনাক্ত করো:\n1. Rahim is my friend.\n2. She is a beautiful girl.\n3. I play football.",
+      "1. নিচের বাক্যগুলোতে Bold করা শব্দগুলোর Parts of Speech শনাক্ত করো:\nRahim is my friend.\n2. She is a beautiful girl.\n3. I play football.",
     isPopular: false, // নতুন পপুলার চেকবাক্স ফিল্ড
   });
 
@@ -59,8 +61,11 @@ const AddLesson = () => {
           Swal.fire({
             icon: "success",
             title: "সফল হয়েছে! 🎉",
-            text: "Parts of Speech লেসনটি সফলভাবে ডাটাবেজে সেভ হয়েছে।",
+            text: "লেসনটি সফলভাবে ডাটাবেজে সেভ হয়েছে।",
             confirmButtonColor: "#0d9488",
+          }).then(() => {
+            // ৩. অ্যালার্টের ওকে বাটনে ক্লিক করার পর ড্যাশবোর্ডে রিডাইরেক্ট হবে
+            navigate("/dashboard");
           });
         }
       })
@@ -225,7 +230,6 @@ const AddLesson = () => {
           ></textarea>
         </div>
 
-        {/* Popular Lesson Checkbox */}
         {/* Popular Lesson Checkbox */}
         <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl cursor-pointer select-none">
           <input
