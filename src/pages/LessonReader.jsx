@@ -128,7 +128,7 @@ const LessonReader = () => {
   }
 
   return (
-    <div className="max-w-350 mx-auto px-4 sm:px-6 lg:px-12 py-8">
+    <div className="max-w-350 mx-auto sm:px-6 lg:px-12 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* বাম পাশে সাইডবার */}
         <div className="lg:col-span-1">

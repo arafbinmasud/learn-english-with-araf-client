@@ -104,7 +104,7 @@ const LessonCard = ({ lesson }) => {
   if (!lesson) return null;
 
   return (
-    <div className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+    <div className="bg-white p-4 sm:p-10 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
       <div className="space-y-2 border-b border-slate-100 pb-6">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
           {lesson.title}
