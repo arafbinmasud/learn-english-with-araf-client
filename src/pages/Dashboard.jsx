@@ -143,8 +143,8 @@ const Dashboard = () => {
     completedLessonIds.includes(l._id),
   );
 
-  // শিক্ষকের জন্য সর্বশেষ ৬টি লেসন (রিভার্স করে বা যেভাবে ডাটা আছে তার শেষ ৬টি)
-  const teacherLessons = [...lessons].reverse().slice(0, 6);
+  // শিক্ষকের জন্য সমস্ত লেসন (রিভার্স করে সব দেখানো হবে, কোনো লিমিট বা slice রাখা হয়নি)
+  const teacherLessons = [...lessons].reverse();
 
   return (
     <div className="max-w-350 mx-auto py-10 px-4 space-y-10">
@@ -213,12 +213,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* --- TEACHER VIEW: সর্বশেষ ৬টি লেসন ও ম্যানেজমেন্ট সেকশন --- */}
+      {/* --- TEACHER VIEW: সব লেসন ও ম্যানেজমেন্ট সেকশন --- */}
       {isTeacher && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-slate-900">
-              শিক্ষক হিসেবে আপনার সাম্প্রতিক লেসনসমূহ (Manage Lessons)
+              শিক্ষক হিসেবে আপনার সকল লেসনসমূহ ({teacherLessons.length})
             </h2>
             <Link
               to="/class/class-6"
@@ -519,7 +519,7 @@ const Dashboard = () => {
                 ></textarea>
               </div>
 
-              {/* Popular Checkbox (Fixed styling) */}
+              {/* Popular Checkbox */}
               <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl cursor-pointer select-none">
                 <input
                   type="checkbox"
