@@ -21,8 +21,13 @@ import Swal from "sweetalert2";
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
   const [lessons, setLessons] = useState([]);
+  const [totalLessons, setTotalLessons] = useState(0);
   const [dbUser, setDbUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  
+  // Pagination-এর জন্য স্টেট (প্রতিবারে ৯টি করে লেসন দেখাবে)
+  const [visibleCount, setVisibleCount] = useState(9);
 
   // এডিট করার জন্য মোডালের স্টেট
   const [isEditing, setIsEditing] = useState(false);
@@ -32,17 +37,20 @@ const Dashboard = () => {
   const isTeacher =
     user?.email === "araf357300@gmail.com" || user?.role === "teacher";
 
-  // লেসন ও ইউজারের প্রোগ্রেস ফেচ করা
+  // লেসন ও ইউজারের প্রোগ্রেস ফেচ করা (Pagination সহ)
   const fetchData = () => {
     setLoading(true);
     Promise.all([
-      axiosSecure.get("/lessons"),
+      axiosSecure.get(`/lessons`), // চাইলে এখানে limit পাস করতে পারো, অথবা ফ্রন্টএண்டும் slice করতে পারো
       user?.email
         ? axiosSecure.get(`/users/${user.email}`)
         : Promise.resolve({ data: null }),
     ])
       .then(([lessonsRes, userRes]) => {
-        setLessons(lessonsRes.data);
+        // ব্যাকএন্ড যদি অবজেক্ট আকারে { total, result } পাঠায় অথবা সরাসরি অ্যারে পাঠায় দুইটার জন্যই হ্যান্ডেল করছি
+        const lessonData = lessonsRes.data.result || lessonsRes.data;
+        setLessons(lessonData);
+        setTotalLessons(lessonsRes.data.total || lessonData.length);
         setDbUser(userRes.data);
         setLoading(false);
       })
@@ -56,7 +64,16 @@ const Dashboard = () => {
     fetchData();
   }, [user]);
 
-  // লেসন ডিলিট করার ফাংশন (SweetAlert সহ)
+  // আরও লেসন লোড করার হ্যান্ডলার (Load More)
+  const handleLoadMore = () => {
+    setLoadingMore(true);
+    setTimeout(() => {
+      setVisibleCount((prev) => prev + 9);
+      setLoadingMore(false);
+    }, 500); // ছোট্ট একটা ফেক ডিলে স্মুথ ফিল দেওয়ার জন্য
+  };
+
+  // লেসন ডিলিট করার ফাংশন
   const handleDelete = (id, title) => {
     Swal.fire({
       title: "Are You Sure?",
@@ -95,13 +112,11 @@ const Dashboard = () => {
     });
   };
 
-  // এডিট মোডাল ওপেন করার ফাংশন
   const handleOpenEditModal = (lesson) => {
     setCurrentLesson(lesson);
     setIsEditing(true);
   };
 
-  // এডিট সাবমিট করার ফাংশন
   const handleUpdateLesson = (e) => {
     e.preventDefault();
     axiosSecure
@@ -137,14 +152,14 @@ const Dashboard = () => {
     );
   }
 
-  // স্টুডেন্টের কমপ্লিট করা লেসনগুলোর লিস্ট
   const completedLessonIds = dbUser?.completedLessons || [];
   const completedLessonsList = lessons.filter((l) =>
     completedLessonIds.includes(l._id),
   );
 
-  // শিক্ষকের জন্য সমস্ত লেসন (রিভার্স করে সব দেখানো হবে, কোনো লিমিট বা slice রাখা হয়নি)
-  const teacherLessons = [...lessons].reverse();
+  // শিক্ষকের জন্য সব লেসন রিভার্স করে, সেখান থেকে দৃশ্যমান কাউন্ট অনুযায়ী কাট করা (Pagination/Load More লজিক)
+  const reversedLessons = [...lessons].reverse();
+  const displayedTeacherLessons = reversedLessons.slice(0, visibleCount);
 
   return (
     <div className="max-w-350 mx-auto py-10 px-4 space-y-10">
@@ -213,12 +228,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* --- TEACHER VIEW: সব লেসন ও ম্যানেজমেন্ট সেকশন --- */}
+      {/* --- TEACHER VIEW: সব লেসন ও লোড মোর সেকশন --- */}
       {isTeacher && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-slate-900">
-              শিক্ষক হিসেবে আপনার সকল লেসনসমূহ ({teacherLessons.length})
+              শিক্ষক হিসেবে আপনার সকল লেসনসমূহ ({lessons.length})
             </h2>
             <Link
               to="/class/class-6"
@@ -229,7 +244,7 @@ const Dashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {teacherLessons.map((lesson) => (
+            {displayedTeacherLessons.map((lesson) => (
               <div
                 key={lesson._id}
                 className="bg-white p-6 rounded-2xl border border-slate-200 space-y-3 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
@@ -281,6 +296,25 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
+
+          {/* Load More Button */}
+          {visibleCount < lessons.length && (
+            <div className="flex justify-center pt-6">
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="btn bg-white border border-teal-600 text-teal-700 hover:bg-teal-50 px-8 rounded-xl font-bold shadow-sm gap-2"
+              >
+                {loadingMore ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} /> লোড হচ্ছে...
+                  </>
+                ) : (
+                  `আরও লেসন দেখুন (${lessons.length - visibleCount}টি বাকি)`
+                )}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -349,7 +383,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* --- EDIT LESSON MODAL --- */}
+      {/* --- EDIT LESSON MODAL (অপরিবর্তিত) --- */}
       {isEditing && currentLesson && (
         <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex justify-center items-center z-50 p-4">
           <div className="bg-white w-full max-w-350 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
@@ -367,7 +401,6 @@ const Dashboard = () => {
 
             <form onSubmit={handleUpdateLesson} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* শ্রেণি */}
                 <div className="space-y-1">
                   <label className="text-sm font-bold text-slate-700">
                     শ্রেণি (Class Level)
@@ -390,7 +423,6 @@ const Dashboard = () => {
                   </select>
                 </div>
 
-                {/* Lesson Number */}
                 <div className="space-y-1">
                   <label className="text-sm font-bold text-slate-700">
                     Lesson Number
@@ -410,7 +442,6 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Lesson Title */}
               <div className="space-y-1">
                 <label className="text-sm font-bold text-slate-700">
                   Lesson Title
@@ -429,7 +460,6 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Short Description */}
               <div className="space-y-1">
                 <label className="text-sm font-bold text-slate-700">
                   Short Description (সংক্ষিপ্ত বিবরণ)
@@ -447,7 +477,6 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Learning Objectives */}
               <div className="space-y-1">
                 <label className="text-sm font-bold text-slate-700">
                   Learning Objectives
@@ -465,7 +494,6 @@ const Dashboard = () => {
                 ></textarea>
               </div>
 
-              {/* Duration */}
               <div className="space-y-1">
                 <label className="text-sm font-bold text-slate-700">
                   পড়ার সময় (Duration)
@@ -484,7 +512,6 @@ const Dashboard = () => {
                 />
               </div>
 
-              {/* Main Content */}
               <div className="space-y-1">
                 <label className="text-sm font-bold text-slate-700">
                   Main Lesson Content (মূল পাঠ)
@@ -502,7 +529,6 @@ const Dashboard = () => {
                 ></textarea>
               </div>
 
-              {/* Exercise / Quiz */}
               <div className="space-y-1">
                 <label className="text-sm font-bold text-slate-700">
                   Lesson Exercise / Quiz (অনুশীলন)
@@ -519,7 +545,6 @@ const Dashboard = () => {
                 ></textarea>
               </div>
 
-              {/* Popular Checkbox */}
               <div className="flex items-center gap-3 p-4 bg-teal-50/50 border border-teal-100 rounded-xl cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -541,7 +566,6 @@ const Dashboard = () => {
                 </label>
               </div>
 
-              {/* Lower Buttons */}
               <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
