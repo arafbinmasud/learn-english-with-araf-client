@@ -1,9 +1,13 @@
-import React from 'react'
+import Seo from "../components/common/Seo";
+import { seoNoindex } from "../lib/seo";
 
 const Profile = () => {
   return (
-    <div>Profile</div>
-  )
-}
+    <section>
+      <Seo seo={seoNoindex("Profile")} />
+      <h1 className="text-2xl font-bold">Profile</h1>
+    </section>
+  );
+};
 
-export default Profile
+export default Profile;

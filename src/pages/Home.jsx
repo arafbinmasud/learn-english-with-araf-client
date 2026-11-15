@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import {
-  Award,
   CheckCircle2,
   ArrowRight,
   Sparkles,
@@ -9,23 +8,26 @@ import {
   Clock,
   Flame,
   XCircle,
-  CheckCircle,
   Loader2,
 } from "lucide-react";
 import axios from "axios";
 import heroImg from "../assets/images/website-hero.webp";
-import { Helmet } from "react-helmet-async";
+import Seo from "../components/common/Seo";
+import { seoHome } from "../lib/seo";
+import { usePreload } from "../lib/preload";
+import { API_URL, CLASSES } from "../config/site";
 
 const Home = () => {
-  const [popularLessons, setPopularLessons] = useState([]);
-  const [loadingLessons, setLoadingLessons] = useState(true);
+  const preload = usePreload();
+  const pre = preload?.type === "home" ? preload : null;
 
-  // ব্যাকএন্ড থেকে শুধুমাত্র isPopular: true লেসনগুলো ফেচ করা (সর্বোচ্চ ৬টি)
+  const [popularLessons, setPopularLessons] = useState(pre?.popular ?? []);
+  const [loadingLessons, setLoadingLessons] = useState(!pre);
+
+  // প্রিলোড ডেটা থাকলে সাথে সাথে দেখানো হয়, পেছনে নতুন ডেটা এনে আপডেট করা হয়
   useEffect(() => {
     axios
-      .get(
-        "https://learn-english-with-araf-server.onrender.com/lessons/popular",
-      )
+      .get(`${API_URL}/lessons/popular`)
       .then((res) => {
         setPopularLessons(res.data);
         setLoadingLessons(false);
@@ -36,56 +38,24 @@ const Home = () => {
       });
   }, []);
 
-  const classesList = [
-    {
-      title: "Class VI",
-      path: "/class/class-6",
-      desc: "ইংরেজির ভিত্তি মজবুত করতে শুরু করো একদম গোড়া থেকে।",
-      bg: "bg-teal-50 text-teal-700 border-teal-200",
-    },
-    {
-      title: "Class VII",
-      path: "/class/class-7",
-      desc: "ইংরেজি গ্রামার ও পাঠ্যবইয়ের প্রতিটি বিষয় বুঝে নাও সহজ ব্যাখ্যার মাধ্যমে।",
-      bg: "bg-sky-50 text-sky-700 border-sky-200",
-    },
-    {
-      title: "Class VIII",
-      path: "/class/class-8",
-      desc: "ইংরেজির কঠিন বিষয়গুলো বুঝে নাও সহজ ব্যাখ্যা ও উদাহরণের মাধ্যমে।",
-      bg: "bg-indigo-50 text-indigo-700 border-indigo-200",
-    },
-    {
-      title: "SSC",
-      path: "/class/ssc",
-      desc: "এসএসসি প্রস্তুতির জন্য প্রয়োজনীয় গ্রামার, পাঠ্যবই ও গুরুত্বপূর্ণ অনুশীলন।",
-      bg: "bg-amber-50 text-amber-700 border-amber-200",
-    },
-    {
-      title: "HSC",
-      path: "/class/hsc",
-      desc: "এইচএসসি ইংরেজির প্রতিটি গুরুত্বপূর্ণ বিষয় শেখো সহজ ও গোছানোভাবে।",
-      bg: "bg-rose-50 text-rose-700 border-rose-200",
-    },
-  ];
-
   return (
     <div className="space-y-20 pb-16">
-      <Helmet>
-        <title>Home | Learn English With Araf</title>
-        <meta
-          name="description"
-          content="ষষ্ঠ শ্রেণি থেকে এইচএসসি পর্যন্ত ইংরেজি শেখার সেরা ফ্রি প্ল্যাটফর্ম।"
-        />
-      </Helmet>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-6 lg:pt-10">
-        <div className="lg:col-span-6 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-sm font-semibold">
-            <Sparkles size={14} /> সম্পূর্ণ বিনামূল্যে ইংরেজি শেখার নির্ভরযোগ্য
-            প্ল্যাটফর্ম
-          </div>
+      <Seo seo={seoHome()} />
 
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.2]">
+      <section
+        aria-labelledby="hero-heading"
+        className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-6 lg:pt-10"
+      >
+        <div className="lg:col-span-6 space-y-6">
+          <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 border border-teal-100 text-teal-700 text-sm font-semibold">
+            <Sparkles size={14} aria-hidden="true" /> সম্পূর্ণ বিনামূল্যে ইংরেজি
+            শেখার নির্ভরযোগ্য প্ল্যাটফর্ম
+          </p>
+
+          <h1
+            id="hero-heading"
+            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.2]"
+          >
             ইংরেজি আর কঠিন নয়! প্রতিটি বিষয়{" "}
             <span className="brand-gradient">বুঝে শেখো,</span> নিজের মতো করে।
           </h1>
@@ -101,65 +71,83 @@ const Home = () => {
               to="/class/class-6"
               className="btn bg-teal-600 hover:bg-teal-700 text-white px-6 rounded-xl shadow-md shadow-teal-100 border-none"
             >
-              চলো, শেখা শুরু করি <ArrowRight size={18} />
+              চলো, শেখা শুরু করি <ArrowRight size={18} aria-hidden="true" />
             </Link>
           </div>
         </div>
 
         <div className="lg:col-span-6 gap-5 items-center">
-          <div className="relative w-full max-w-xl bg-white p-5 rounded-3xl shadow-xl border border-slate-100 group">
-            <div className="absolute -top-3 -right-3 bg-teal-600 text-white text-xs px-3.5 py-1.5 rounded-full font-semibold shadow-md flex items-center gap-1 z-10">
-              <CheckCircle2 size={14} /> তোমার শেখার সঙ্গী
-            </div>
+          <figure className="relative w-full max-w-xl bg-white p-5 rounded-3xl shadow-xl border border-slate-100 group">
+            <span className="absolute -top-3 -right-3 bg-teal-600 text-white text-xs px-3.5 py-1.5 rounded-full font-semibold shadow-md flex items-center gap-1 z-10">
+              <CheckCircle2 size={14} aria-hidden="true" /> তোমার শেখার সঙ্গী
+            </span>
 
             <div className="w-full h-72 rounded-2xl bg-linear-to-b from-slate-50 to-teal-50/30 overflow-hidden flex flex-col items-center justify-center border border-slate-200/80 relative">
+              {/* এটাই পেজের সবচেয়ে বড় ছবি (LCP), তাই lazy নয়, বরং high priority */}
               <img
                 src={heroImg}
                 alt="Araf Bin Masud - Founder and English Mentor at Learn English With Araf"
+                width="1672"
+                height="941"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover rounded-2xl"
-                loading="lazy"
               />
 
-              <div className="absolute bottom-0 inset-x-0 h-28 bg-linear-to-t from-slate-950 via-slate-950/70 to-transparent p-4 flex flex-col justify-end items-center text-center">
-                <h3 className="text-lg font-bold text-white tracking-wide drop-shadow-md">
+              <figcaption className="absolute bottom-0 inset-x-0 h-28 bg-linear-to-t from-slate-950 via-slate-950/70 to-transparent p-4 flex flex-col justify-end items-center text-center">
+                <span className="text-lg font-bold text-white tracking-wide drop-shadow-md">
                   Araf Bin Masud
-                </h3>
-                <p className="text-xs text-teal-300 font-semibold tracking-wider uppercase mt-0.5 drop-shadow">
+                </span>
+                <span className="text-xs text-teal-300 font-semibold tracking-wider uppercase mt-0.5 drop-shadow">
                   Founder & Mentor
-                </p>
-              </div>
+                </span>
+              </figcaption>
             </div>
-          </div>
+          </figure>
         </div>
-      </div>
+      </section>
 
-      <div className=" max-w-250 mx-auto bg-slate-900 text-slate-200 p-4 rounded-2xl shadow-lg  text-sm space-y-2">
-        <div className="text-teal-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles size={13} /> Common Mistakes and Correction:
-        </div>
-        <div className="space-y-1.5 font-mono">
-          <div className="flex items-center gap-2">
-            <XCircle size={15} className="text-rose-500 shrink-0" />
+      <aside
+        aria-label="সাধারণ ভুল ও সংশোধন"
+        className="max-w-250 mx-auto bg-slate-900 text-slate-200 p-4 rounded-2xl shadow-lg text-sm space-y-2"
+      >
+        <p className="text-teal-400 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+          <Sparkles size={13} aria-hidden="true" /> Common Mistakes and
+          Correction:
+        </p>
+        <ul className="space-y-1.5 font-mono">
+          <li className="flex items-center gap-2">
+            <XCircle
+              size={15}
+              className="text-rose-500 shrink-0"
+              aria-hidden="true"
+            />
             <span>
-              He <span className="text-rose-400 line-through">go</span>{" "}
-              <span className="text-emerald-400 font-bold underline">goes</span>{" "}
-              to school.
+              He <del className="text-rose-400">go</del>{" "}
+              <ins className="text-emerald-400 font-bold">goes</ins> to school.
             </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <XCircle size={15} className="text-rose-500 shrink-0" />
+          </li>
+          <li className="flex items-center gap-2">
+            <XCircle
+              size={15}
+              className="text-rose-500 shrink-0"
+              aria-hidden="true"
+            />
             <span>
-              She is <span className="text-rose-400 line-through">an</span>{" "}
-              <span className="text-emerald-400 font-bold underline">a</span>{" "}
-              university student.
+              She is <del className="text-rose-400">an</del>{" "}
+              <ins className="text-emerald-400 font-bold">a</ins> university
+              student.
             </span>
-          </div>
-        </div>
-      </div>
+          </li>
+        </ul>
+      </aside>
 
-      <div className="space-y-8">
+      <section aria-labelledby="classes-heading" className="space-y-8">
         <div className="text-center max-w-xl mx-auto space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+          <h2
+            id="classes-heading"
+            className="text-2xl sm:text-3xl font-bold text-slate-900"
+          >
             তোমার Class বেছে নাও
           </h2>
           <p className="text-slate-500">
@@ -167,42 +155,46 @@ const Home = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {classesList.map((cls, idx) => (
-            <Link
-              to={cls.path}
-              key={idx}
-              className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-xl transition-all group flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-base border ${cls.bg}`}
-                >
-                  {cls.title.replace("Class ", "")}
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {CLASSES.map((cls) => (
+            <li key={cls.slug} className="flex">
+              <Link
+                to={`/class/${cls.slug}`}
+                className="w-full bg-white p-6 rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-xl transition-all group flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div
+                    aria-hidden="true"
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-base border ${cls.color}`}
+                  >
+                    {cls.short.replace("Class ", "")}
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800 group-hover:text-teal-600 transition-colors">
+                    {cls.short}
+                  </h3>
+                  <p className="text-slate-500 leading-relaxed">
+                    {cls.homeDesc}
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 group-hover:text-teal-600 transition-colors">
-                  {cls.title}
-                </h3>
-                <p className=" text-slate-500 leading-relaxed">
-                  {cls.desc}
-                </p>
-              </div>
-              <div className="pt-6 flex items-center text-teal-600 font-semibold text-sm gap-1 group-hover:gap-2 transition-all">
-                শেখা শুরু করো <ArrowRight size={16} />
-              </div>
-            </Link>
+                <span className="pt-6 flex items-center text-teal-600 font-semibold text-sm gap-1 group-hover:gap-2 transition-all">
+                  শেখা শুরু করো <ArrowRight size={16} aria-hidden="true" />
+                </span>
+              </Link>
+            </li>
           ))}
-        </div>
-      </div>
+        </ul>
+      </section>
 
-      {/* ডাইনামিক পপুলার লেসন সেকশন (সর্বোচ্চ ৬টি) */}
-      <div className="space-y-8 bg-slate-50 border border-slate-200/60 rounded-3xl p-6 sm:p-10">
+      <section aria-labelledby="popular-heading" className="space-y-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-teal-700 text-xs font-bold uppercase tracking-wider bg-teal-100/60 px-3 py-1 rounded-full">
-              <Flame size={14} /> ট্রেন্ডিং টপিক
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            <p className="inline-flex items-center gap-1.5 text-teal-700 text-xs font-bold uppercase tracking-wider bg-teal-100/60 px-3 py-1 rounded-full">
+              <Flame size={14} aria-hidden="true" /> ট্রেন্ডিং টপিক
+            </p>
+            <h2
+              id="popular-heading"
+              className="text-2xl sm:text-3xl font-bold text-slate-900"
+            >
               Popular Lessons
             </h2>
             <p className="text-slate-500">
@@ -213,57 +205,66 @@ const Home = () => {
             to="/class/class-6"
             className="btn btn-sm btn-outline border-slate-300 hover:border-teal-600 text-slate-700"
           >
-            Explore All <ArrowRight size={16} />
+            Explore All <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
 
         {loadingLessons ? (
-          <div className="flex justify-center items-center py-12">
+          <div
+            className="flex justify-center items-center py-12"
+            role="status"
+            aria-label="লোড হচ্ছে"
+          >
             <Loader2 className="animate-spin text-teal-600" size={35} />
           </div>
         ) : popularLessons.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {popularLessons.map((lesson) => (
-              <Link
-                to={`/lesson/${lesson._id}`}
-                key={lesson._id}
-                className="bg-white p-6 rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition-all flex flex-col justify-between group"
-              >
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-100 uppercase">
-                      {lesson.classLevel}
+              <li key={lesson._id} className="flex">
+                <article className="w-full">
+                  <Link
+                    to={`/lesson/${lesson._id}`}
+                    className="h-full bg-white p-6 rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition-all flex flex-col justify-between group"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-teal-50 text-teal-700 border border-teal-100 uppercase">
+                          {lesson.classLevel}
+                        </span>
+                        <span className="text-xs text-slate-400 flex items-center gap-1">
+                          <Clock size={13} aria-hidden="true" />{" "}
+                          {lesson.duration || "৫ মিনিট"}
+                        </span>
+                      </div>
+                      <h3 className="text-base font-bold text-slate-800 group-hover:text-teal-600 transition-colors leading-snug">
+                        {lesson.title}
+                      </h3>
+                      <p className="text-slate-500 line-clamp-2">
+                        {lesson.shortDescription}
+                      </p>
+                    </div>
+                    <span className="pt-6 flex items-center justify-between text-sm font-semibold text-slate-500 border-t border-slate-100 mt-4">
+                      <span className="flex items-center gap-1 text-teal-600">
+                        <BookOpen size={14} aria-hidden="true" /> পড়া শুরু করো
+                      </span>
+                      <ArrowRight
+                        size={15}
+                        aria-hidden="true"
+                        className="group-hover:translate-x-1 transition-transform text-teal-600"
+                      />
                     </span>
-                    <span className="text-xs text-slate-400 flex items-center gap-1">
-                      <Clock size={13} /> {lesson.duration || "৫ মিনিট"}
-                    </span>
-                  </div>
-                  <h3 className="text-base font-bold text-slate-800 group-hover:text-teal-600 transition-colors leading-snug">
-                    {lesson.title}
-                  </h3>
-                  <p className="text-slate-500 line-clamp-2">
-                    {lesson.shortDescription}
-                  </p>
-                </div>
-                <div className="pt-6 flex items-center justify-between text-sm font-semibold text-slate-500 border-t border-slate-100 mt-4">
-                  <span className="flex items-center gap-1 text-teal-600">
-                    <BookOpen size={14} /> পড়া শুরু করো
-                  </span>
-                  <ArrowRight
-                    size={15}
-                    className="group-hover:translate-x-1 transition-transform text-teal-600"
-                  />
-                </div>
-              </Link>
+                  </Link>
+                </article>
+              </li>
             ))}
-          </div>
+          </ul>
         ) : (
-          <div className="text-center py-8 text-slate-500">
+          <p className="text-center py-8 text-slate-500">
             বর্তমানে কোনো পপুলার লেসন Available নেই। খুব শীঘ্রই লেসনগুলো যুক্ত
             করা হবে
-          </div>
+          </p>
         )}
-      </div>
+      </section>
     </div>
   );
 };

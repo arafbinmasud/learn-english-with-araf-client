@@ -84,9 +84,10 @@ const markdownComponents = {
   ul: ({ node, ...props }) => <ul style={s.ul} {...props} />,
   ol: ({ node, ...props }) => <ol style={s.ol} {...props} />,
   li: ({ node, ...props }) => <li style={s.li} {...props} />,
-  h1: ({ node, ...props }) => <h1 style={s.h1} {...props} />,
-  h2: ({ node, ...props }) => <h2 style={s.h2} {...props} />,
-  h3: ({ node, ...props }) => <h3 style={s.h3} {...props} />,
+  h1: ({ node, ...props }) => <h2 style={s.h1} {...props} />,
+  h2: ({ node, ...props }) => <h3 style={s.h2} {...props} />,
+  h3: ({ node, ...props }) => <h4 style={s.h3} {...props} />,
+  h4: ({ node, ...props }) => <h5 style={s.h3} {...props} />,
   p: ({ node, ...props }) => <p style={s.p} {...props} />,
   hr: ({ node, ...props }) => <hr style={s.hr} {...props} />,
   code: ({ node, inline, ...props }) => <code style={s.code} {...props} />,
@@ -104,42 +105,52 @@ const LessonCard = ({ lesson }) => {
   if (!lesson) return null;
 
   return (
-    <div className="bg-white p-4 sm:p-10 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
-      <div className="space-y-2 border-b border-slate-100 pb-6">
+    <article className="bg-white p-4 sm:p-10 rounded-3xl border border-slate-200/80 shadow-sm space-y-6">
+      <header className="space-y-2 border-b border-slate-100 pb-6">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
           {lesson.title}
         </h1>
         <p className="text-sm text-slate-500 flex items-center gap-1.5">
-          <BookOpen size={15} className="text-teal-600" /> মনোযোগ দিয়ে পুরো
-          লেসনটি পড়ে নাও।
+          <BookOpen size={15} className="text-teal-600" aria-hidden="true" />{" "}
+          মনোযোগ দিয়ে পুরো লেসনটি পড়ে নাও।
         </p>
-      </div>
+      </header>
 
-      {/* Learning objectives */}
-      <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
-        এই লেসন শেষে যা যা শিখবেঃ-
-      </h2>
-      <div className="text-slate-700 text-base sm:text-lg leading-relaxed">
-        <Markdown>{lesson.learningObjectives}</Markdown>
-      </div>
+      {lesson.learningObjectives && (
+        <section aria-labelledby="objectives-heading" className="space-y-4">
+          <h2
+            id="objectives-heading"
+            className="text-xl sm:text-2xl font-extrabold text-slate-900"
+          >
+            এই লেসন শেষে যা যা শিখবেঃ-
+          </h2>
+          <div className="text-slate-700 text-base sm:text-lg leading-relaxed">
+            <Markdown>{lesson.learningObjectives}</Markdown>
+          </div>
+        </section>
+      )}
 
-      {/* Main content */}
-      <div className="text-slate-700 text-base sm:text-lg leading-relaxed">
+      <section className="text-slate-700 text-base sm:text-lg leading-relaxed">
         <Markdown>{lesson.content}</Markdown>
-      </div>
+      </section>
 
-      {/* Exercise */}
       {lesson.exercise && (
-        <div className="bg-teal-50/70 border border-teal-100 rounded-2xl p-6 space-y-3">
-          <h3 className="font-bold text-teal-900 text-lg flex items-center gap-2">
-            📝 অনুশীলন:
-          </h3>
+        <section
+          aria-labelledby="exercise-heading"
+          className="bg-teal-50/70 border border-teal-100 rounded-2xl p-6 space-y-3"
+        >
+          <h2
+            id="exercise-heading"
+            className="font-bold text-teal-900 text-lg flex items-center gap-2"
+          >
+            <span aria-hidden="true">📝</span> অনুশীলন:
+          </h2>
           <div className="text-base text-slate-700 font-medium">
             <Markdown>{lesson.exercise}</Markdown>
           </div>
-        </div>
+        </section>
       )}
-    </div>
+    </article>
   );
 };
 

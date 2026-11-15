@@ -5,10 +5,14 @@ import PrivateRoute from "./PrivateRoute";
 import TeacherRoute from "./TeacherRoute";
 import { Loader2 } from "lucide-react";
 
-// ১. পেজগুলোকে lazy লোড করা হলো (সাইট সুপার ফাস্ট করার জন্য)
-const Home = lazy(() => import("../pages/Home"));
-const ClassSyllabus = lazy(() => import("../pages/ClassSyllabus"));
-const LessonReader = lazy(() => import("../pages/LessonReader"));
+// প্রবেশের পেজগুলো (হোম, ক্লাস, লেসন) সরাসরি ইম্পোর্ট: এগুলো আগে থেকেই prerender করা HTML হিসেবে আসে,
+// lazy করলে JS চাঙ্ক লোডের সময় সেই কনটেন্ট স্পিনারে ঢেকে যেত।
+import Home from "../pages/Home";
+import ClassSyllabus from "../pages/ClassSyllabus";
+import LessonReader from "../pages/LessonReader";
+import NotFound from "../pages/NotFound";
+
+// বাকি পেজগুলো (লগইন, ড্যাশবোর্ড ইত্যাদি) lazy লোড হয়
 const Profile = lazy(() => import("../pages/Profile"));
 const Login = lazy(() => import("../pages/Login"));
 const Register = lazy(() => import("../pages/Register"));
@@ -29,27 +33,15 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <Home />
-          </Suspense>
-        ),
+        element: <Home />,
       },
       {
         path: "class/:classLevel",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <ClassSyllabus />
-          </Suspense>
-        ),
+        element: <ClassSyllabus />,
       },
       {
         path: "lesson/:lessonId",
-        element: (
-          <Suspense fallback={<PageLoader />}>
-            <LessonReader />
-          </Suspense>
-        ),
+        element: <LessonReader />,
       },
       {
         path: "profile",
@@ -95,6 +87,7 @@ export const router = createBrowserRouter([
           </TeacherRoute>
         ),
       },
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);

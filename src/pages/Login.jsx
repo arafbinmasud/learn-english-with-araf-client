@@ -5,6 +5,8 @@ import { Mail, Lock, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import Swal from "sweetalert2";
+import Seo from "../components/common/Seo";
+import { seoNoindex } from "../lib/seo";
 
 const Login = () => {
   const {
@@ -103,6 +105,7 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto py-12 px-4">
+      <Seo seo={seoNoindex("Login")} />
       <div className="bg-white p-8 rounded-3xl border border-slate-200/80 shadow-xl space-y-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-extrabold text-slate-900">

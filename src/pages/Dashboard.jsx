@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import Swal from "sweetalert2";
+import Seo from "../components/common/Seo";
+import { seoNoindex } from "../lib/seo";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -163,6 +165,7 @@ const Dashboard = () => {
 
   return (
     <div className="max-w-350 mx-auto py-10 px-4 space-y-10">
+      <Seo seo={seoNoindex("Dashboard")} />
       {/* ওয়েলকাম ব্যানার */}
       <div className="bg-linear-to-r from-teal-700 to-teal-900 text-white p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="space-y-2">

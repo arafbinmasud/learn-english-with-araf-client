@@ -4,6 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import { axiosSecure } from "../api/axiosInstance";
 import { BookPlus, PlusCircle, Loader2, Sparkles } from "lucide-react";
 import Swal from "sweetalert2";
+import Seo from "../components/common/Seo";
+import { seoNoindex } from "../lib/seo";
 
 const AddLesson = () => {
   const { user } = useContext(AuthContext);
@@ -83,6 +85,7 @@ const AddLesson = () => {
 
   return (
     <div className="max-w-350 mx-auto py-12 px-4">
+      <Seo seo={seoNoindex("Add Lesson")} />
       <form
         onSubmit={handleAddLesson}
         className="bg-white p-8 sm:p-10 rounded-3xl border border-slate-200/80 shadow-xl space-y-6"
